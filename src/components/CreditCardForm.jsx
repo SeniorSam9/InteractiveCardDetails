@@ -1,12 +1,18 @@
-import {
-  cardName,
-  cardNumber,
-  cardMonth,
-  cardYear,
-  cardCvc,
-} from "../constants/docVars";
+import { useState } from "react";
+
 export default function CreditCardForm() {
-  const MAX_CREDIT_NUMBER = "19";
+  const [isBlank, setIsBlank] = useState(false);
+  const [form, setForm] = useState({
+    cardName: "",
+    cardNumber: "",
+    expiryDate: {
+      year: "",
+      month: "",
+    },
+    cvc: "",
+  });
+
+  const MAX_CREDIT_LENGTH = "19";
 
   const handleNumbersMargin = (evt) => {
     let value = evt.target.value.replace(/\D/g, ""); // remove all non-digit characters
@@ -48,6 +54,7 @@ export default function CreditCardForm() {
         action="#"
         className="flex flex-col w-[55%]"
         onSubmit={handleSubmitValidation}
+        id="form"
       >
         <div id="card-name" className="flex flex-col mb-5">
           <label htmlFor="cardName" className=" uppercase mb-2 text-[#2f0e44]">
@@ -56,10 +63,13 @@ export default function CreditCardForm() {
           <input
             type="text"
             name="cardName"
+            value={form.cardName}
             className="border border-grey-500 p-2 rounded-md"
             placeholder="e.g. AHMED ALOUFI"
             id="card-name"
+            onChange={() => {}}
           />
+          {isBlank && <p className=" text-red-700">Can't be blank</p>}
         </div>
         <div id="card-number" className="flex flex-col mb-4">
           <label
@@ -71,10 +81,11 @@ export default function CreditCardForm() {
           <input
             type="text"
             name="cardNumber"
-            maxLength={MAX_CREDIT_NUMBER}
+            value={form.cardNumber}
+            maxLength={MAX_CREDIT_LENGTH}
             className="border border-grey-500 p-2 rounded-md"
             placeholder="e.g. 1234 5678 9123 0000"
-            onInput={handleNumbersMargin}
+            onChange={handleNumbersMargin}
             id="card-number"
           />
         </div>
@@ -87,19 +98,23 @@ export default function CreditCardForm() {
               <input
                 type="text"
                 name="card-month"
+                value={form.expiryDate.month}
                 placeholder="MM"
                 className=" w-16 p-2 mr-3 border rounded-md"
-                onInput={handleDateInput}
+                onChange={handleDateInput}
                 id="card-month"
               />
+              {isBlank && <p className=" text-red-700">Can't be blank</p>}
               <input
                 type="text"
                 name="card-year"
+                value={form.expiryDate.year}
                 placeholder="YY"
                 className="w-16 p-2 border rounded-md"
-                onInput={handleDateInput}
+                onChange={handleDateInput}
                 id="card-year"
               />
+              {isBlank && <p className=" text-red-700">Can't be blank</p>}
             </div>
           </div>
           <div id="card-cvc" className="flex flex-col">
@@ -109,9 +124,10 @@ export default function CreditCardForm() {
             <input
               type="text"
               name="cardCvc"
+              value={form.cvc}
               className="border rounded-md p-2"
               placeholder="e.g. 123"
-              onInput={handleCvcInput}
+              onChange={handleCvcInput}
               id="card-cvc"
             />
           </div>
