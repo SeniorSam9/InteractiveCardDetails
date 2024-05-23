@@ -2,41 +2,57 @@ import { useState } from "react";
 
 export default function CreditCardForm() {
   const [isBlank, setIsBlank] = useState(false);
-  const [form, setForm] = useState({
-    cardName: "",
-    cardNumber: "",
-    expiryDate: {
-      year: "",
-      month: "",
-    },
-    cvc: "",
-  });
-
-  const MAX_CREDIT_LENGTH = "19";
+  const [cardName, setCardName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardMonth, setCardMonth] = useState("");
+  const [cardYear, setCardYear] = useState("");
+  const [cardCvc, setCardCvc] = useState("");
+  const MAX_CREDIT_LENGTH = "22";
 
   const handleNumbersMargin = (evt) => {
+    // setCardNumber(value);
     let value = evt.target.value.replace(/\D/g, ""); // remove all non-digit characters
-    value = value.match(/.{1,4}/g)?.join(" ") || value; // add space every 4 digits
 
+    value = value.match(/.{1,4}/g)?.join("  ") || value;
+    // add space every 4 digits
     evt.target.value = value;
   };
 
-  const handleDateInput = (evt) => {
+  const handleMonthInput = (evt) => {
     // remove any non-digit characters
     let value = evt.target.value.replace(/\D/g, "");
-
+    setCardMonth(value);
     // limit the input to a maximum of 2 digits
     if (value.length > 2) {
       value = value.slice(0, 2);
     }
+    if (cardMonth > 12) {
+      evt.target.value = "";
+    } else {
+      // set the sanitized value back to the input field
+      evt.target.value = value;
+    }
+  };
 
-    // set the sanitized value back to the input field
-    evt.target.value = value;
+  const handleYearInput = (evt) => {
+    // remove any non-digit characters
+    let value = evt.target.value.replace(/\D/g, "");
+    setCardYear(value);
+    // limit the input to a maximum of 2 digits
+    if (value.length > 2) {
+      value = value.slice(0, 2);
+    }
+    if (cardMonth < 23) {
+      evt.target.value = "";
+    } else {
+      // set the sanitized value back to the input field
+      evt.target.value = value;
+    }
   };
 
   const handleCvcInput = (evt) => {
     let value = evt.target.value.replace(/\D/g, "");
-
+    setCardCvc(value);
     if (value.length > 3) {
       value = value.slice(0, 3);
     }
@@ -45,6 +61,18 @@ export default function CreditCardForm() {
 
   const handleSubmitValidation = (evt) => {
     evt.preventDefault();
+    let signal = true;
+    [cardName, cardMonth, cardYear, cardCvc].forEach((inp) => {
+      if (inp === "") {
+        signal = false;
+        setIsBlank(true);
+        setTimeout(() => {
+          setIsBlank(false);
+        }, 3000);
+      }
+    });
+    if (signal) {
+    }
   };
 
   return (
@@ -63,11 +91,13 @@ export default function CreditCardForm() {
           <input
             type="text"
             name="cardName"
-            value={form.cardName}
+            value={cardName}
             className="border border-grey-500 p-2 rounded-md"
             placeholder="e.g. AHMED ALOUFI"
             id="card-name"
-            onChange={() => {}}
+            onChange={(evt) => {
+              setCardName(evt.target.value);
+            }}
           />
           {isBlank && <p className=" text-red-700">Can't be blank</p>}
         </div>
@@ -81,7 +111,7 @@ export default function CreditCardForm() {
           <input
             type="text"
             name="cardNumber"
-            value={form.cardNumber}
+            // value={cardNumber}
             maxLength={MAX_CREDIT_LENGTH}
             className="border border-grey-500 p-2 rounded-md"
             placeholder="e.g. 1234 5678 9123 0000"
@@ -97,21 +127,21 @@ export default function CreditCardForm() {
             <div className="mt-4">
               <input
                 type="text"
-                name="card-month"
-                value={form.expiryDate.month}
+                name="cardMonth"
+                value={cardMonth}
                 placeholder="MM"
                 className=" w-16 p-2 mr-3 border rounded-md"
-                onChange={handleDateInput}
+                onChange={handleMonthInput}
                 id="card-month"
               />
               {isBlank && <p className=" text-red-700">Can't be blank</p>}
               <input
                 type="text"
-                name="card-year"
-                value={form.expiryDate.year}
+                name="cardYear"
+                value={cardYear}
                 placeholder="YY"
                 className="w-16 p-2 border rounded-md"
-                onChange={handleDateInput}
+                onChange={handleYearInput}
                 id="card-year"
               />
               {isBlank && <p className=" text-red-700">Can't be blank</p>}
@@ -124,7 +154,7 @@ export default function CreditCardForm() {
             <input
               type="text"
               name="cardCvc"
-              value={form.cvc}
+              value={cardCvc}
               className="border rounded-md p-2"
               placeholder="e.g. 123"
               onChange={handleCvcInput}
