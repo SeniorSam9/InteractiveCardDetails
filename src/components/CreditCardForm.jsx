@@ -71,8 +71,6 @@ export default function CreditCardForm() {
         }, 3000);
       }
     });
-    if (signal) {
-    }
   };
 
   return (
